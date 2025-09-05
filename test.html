@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            line-height: 1.6;
+            min-height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+        #initial-content h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        #initial-content img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        #nameInput {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1em;
+        }
+        #submitButton {
+            padding: 10px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        #submitButton:hover {
+            background-color: #218838;
+        }
+        #final-message {
+            display: none;
+            font-size: 1.1em;
+            text-align: left;
+            white-space: pre-wrap;
+            opacity: 1;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .action-button {
+            display: none;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #kirim-jawaban-button {
+            background-color: #007bff;
+            color: white;
+        }
+        #kirim-jawaban-button:hover {
+            background-color: #0056b3;
+        }
+        #malas-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        #malas-button:hover {
+            background-color: #c82333;
+        }
+        #playMusicButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="initial-content">
+            <img src="https://media.giphy.com/media/efw1uWqfM8xK25Jp1W/giphy.gif" alt="Panda melambaikan tangan" style="width: 150px;">
+            <h1>Hello my name is Rill. What's your name?</h1>
+            <input type="text" id="nameInput" placeholder="Ketik namamu di sini...">
+            <br>
+            <button id="submitButton">Kirim</button>
+        </div>
+
+        <div id="final-content" style="display: none;">
+            <button id="playMusicButton">Putar Musik</button>
+            <div id="final-message"></div>
+        </div>
+
+        <div id="action-buttons" class="button-container">
+            <button id="kirim-jawaban-button" class="action-button">Kirim Jawaban</button>
+            <button id="malas-button" class="action-button">Malas</button>
+        </div>
+
+        <audio id="backgroundMusic" src="jikustik_bila_clip.mp3" preload="auto" loop></audio>
+    </div>
+
+    <script>
+        const initialContent = document.getElementById('initial-content');
+        const finalContent = document.getElementById('final-content');
+        const finalMessage = document.getElementById('final-message');
+        const nameInput = document.getElementById('nameInput');
+        const submitButton = document.getElementById('submitButton');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playMusicButton = document.getElementById('playMusicButton');
+        const kirimJawabanButton = document.getElementById('kirim-jawaban-button');
+        const malasButton = document.getElementById('malas-button');
+
+        const messageTemplate = `Hello {name}
+        
+Aku tidak tahu bagaimana harus mengatakan ini, jadi aku membuat halaman web ini. Aku tahu kamu sudah punya seseorang yang kamu suka. Tapi aku hanya ingin kamu tahu, sejak pertama kali aku melihatmu, aku sudah menyimpan perasaan ini.
+        
+Aku tahu mungkin kita tidak bisa bersama karena beberapa hal, tapi aku tidak bisa menyimpan perasaan ini sendirian. Aku harap kamu mengerti.
+        
+Terima kasih, {name}.`;
+
+        let textIndex = 0;
+        let currentText = "";
+
+        function typeWriter() {
+            if (textIndex < currentText.length) {
+                const char = currentText.charAt(textIndex);
+                finalMessage.textContent += char;
+                textIndex++;
+                let delay = (char === '.' || char === '?' || char === '\n') ? 800 : 30;
+                setTimeout(typeWriter, delay);
+            } else {
+                setTimeout(() => {
+                    finalMessage.textContent = 'Mau mengirim jawaban?';
+                    finalMessage.style.textAlign = 'center';
+
+                    setTimeout(() => {
+                        kirimJawabanButton.style.display = 'block';
+                        malasButton.style.display = 'block';
+                    }, 2000);
+                }, 1000);
+            }
+        }
+
+        function showFinalContent() {
+            const name = nameInput.value;
+            if (name.trim() !== '') {
+                currentText = messageTemplate.replace(/{name}/g, name);
+                initialContent.style.display = 'none';
+                finalContent.style.display = 'block';
+                finalMessage.style.display = 'none';
+            }
+        }
+
+        submitButton.addEventListener('click', showFinalContent);
+        nameInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                showFinalContent();
+            }
+        });
+
+        playMusicButton.addEventListener('click', function() {
+            backgroundMusic.play();
+            playMusicButton.style.display = 'none';
+            finalMessage.style.display = 'block';
+            typeWriter();
+        });
+
+        kirimJawabanButton.addEventListener('click', function() {
+            window.open('https://www.tiktok.com/@rillll_14', '_blank');
+        });
+
+        malasButton.addEventListener('click', function(e) {
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            const buttonRect = malasButton.getBoundingClientRect();
+
+            let newX = Math.random() * (containerRect.width - buttonRect.width);
+            let newY = Math.random() * (containerRect.height - buttonRect.height);
+
+            malasButton.style.position = 'absolute';
+            malasButton.style.left = `${newX}px`;
+            malasButton.style.top = `${newY}px`;
+        });
+    </script>
+</body>
+</html>
